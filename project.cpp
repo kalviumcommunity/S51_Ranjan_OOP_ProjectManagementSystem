@@ -3,7 +3,6 @@
 #include <string>
 using namespace std;
 
-
 class Task {
 private:
     string title;
@@ -18,23 +17,22 @@ public:
 
     
     void markComplete() {
-        completed = true;
+        this->completed = true;
     }
 
     
     void displayTask() const {
-        cout << "Title: " << title << "\n"
-                  << "Description: " << description << "\n"
-                  << "Deadline: " << deadline << "\n"
-                  << "Status: " << (completed ? "Completed" : "Pending") << "\n";
+        cout << "Title: " << this->title << "\n"
+             << "Description: " << this->description << "\n"
+             << "Deadline: " << this->deadline << "\n"
+             << "Status: " << (this->completed ? "Completed" : "Pending") << "\n";
     }
 
     
     string getTitle() const {
-        return title;
+        return this->title;
     }
 };
-
 
 class Project {
 private:
@@ -48,13 +46,13 @@ public:
 
     
     void addTask(const Task& task) {
-        tasks.push_back(task);
+        this->tasks.push_back(task);
     }
 
     
     void listTasks() const {
-        cout << "Tasks for Project: " << projectName << "\n";
-        for (const auto& task : tasks) {
+        cout << "Tasks for Project: " << this->projectName << "\n";
+        for (const auto& task : this->tasks) {
             task.displayTask();
             cout << "----------------\n";
         }
@@ -62,44 +60,59 @@ public:
 
     
     void addTeamMember(const string& member) {
-        teamMembers.push_back(member);
+        this->teamMembers.push_back(member);
     }
 
     
     void listTeamMembers() const {
-        cout << "Team Members for Project: " << projectName << "\n";
-        for (const auto& member : teamMembers) {
+        cout << "Team Members for Project: " << this->projectName << "\n";
+        for (const auto& member : this->teamMembers) {
             cout << "- " << member << "\n";
         }
     }
 };
 
-
 int main() {
-    
-    Task task1("Design Layout", "Create mockups for the new website", "2024-08-15");
-    Task task2("Develop Frontend", "Implement the frontend using React", "2024-09-15");
+    string projectName;
+    cout << "Enter the project name: ";
+    getline(cin, projectName);
 
-    
-    Project project1("Website Redesign");
+    Project project1(projectName);
 
-    
-    project1.addTask(task1);
-    project1.addTask(task2);
+    int numTasks;
+    cout << "Enter the number of tasks: ";
+    cin >> numTasks;
+    cin.ignore(); 
 
-    
-    project1.addTeamMember("Alice");
-    project1.addTeamMember("Bob");
+    for (int i = 0; i < numTasks; ++i) {
+        string title, description, deadline;
+        cout << "Enter title for task " << i + 1 << ": ";
+        getline(cin, title);
+        cout << "Enter description for task " << i + 1 << ": ";
+        getline(cin, description);
+        cout << "Enter deadline for task " << i + 1 << ": ";
+        getline(cin, deadline);
 
-    
+        Task task(title, description, deadline);
+        project1.addTask(task);
+    }
+
+    int numMembers;
+    cout << "Enter the number of team members: ";
+    cin >> numMembers;
+    cin.ignore(); 
+
+    for (int i = 0; i < numMembers; ++i) {
+        string member;
+        cout << "Enter name for team member " << i + 1 << ": ";
+        getline(cin, member);
+
+        project1.addTeamMember(member);
+    }
+
+    cout << "\nProject Details:\n";
     project1.listTasks();
     project1.listTeamMembers();
 
-    
-    task1.markComplete();
-    cout << "\nUpdated Task Details:\n";
-    task1.displayTask();
-
     return 0;
 }
-
