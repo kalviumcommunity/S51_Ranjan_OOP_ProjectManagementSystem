@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+
 using namespace std;
 
 class Task {
@@ -11,16 +12,17 @@ private:
     string deadline;
 
 public:
-    
+    // Default constructor
+    Task() : title(""), description(""), completed(false), deadline("") {}
+
+    // Parameterized constructor
     Task(const string& title, const string& description, const string& deadline)
         : title(title), description(description), completed(false), deadline(deadline) {}
 
-    
     void markComplete() {
         this->completed = true;
     }
 
-    
     void displayTask() const {
         cout << "Title: " << this->title << "\n"
              << "Description: " << this->description << "\n"
@@ -28,7 +30,6 @@ public:
              << "Status: " << (this->completed ? "Completed" : "Pending") << "\n";
     }
 
-    
     string getTitle() const {
         return this->title;
     }
@@ -41,15 +42,12 @@ private:
     vector<string> teamMembers;
 
 public:
-    
     Project(const string& name) : projectName(name) {}
 
-    
     void addTask(const Task& task) {
         this->tasks.push_back(task);
     }
 
-    
     void listTasks() const {
         cout << "Tasks for Project: " << this->projectName << "\n";
         for (const auto& task : this->tasks) {
@@ -58,21 +56,45 @@ public:
         }
     }
 
-    
     void addTeamMember(const string& member) {
         this->teamMembers.push_back(member);
     }
 
-    
     void listTeamMembers() const {
         cout << "Team Members for Project: " << this->projectName << "\n";
         for (const auto& member : this->teamMembers) {
             cout << "- " << member << "\n";
         }
     }
+
+    string getProjectName() const {
+        return this->projectName;
+    }
+};
+
+class Manager {
+private:
+    vector<Project> projects;
+
+public:
+    void addProject(const Project& project) {
+        projects.push_back(project);
+    }
+
+    void listProjects() const {
+        cout << "Projects:\n";
+        for (const auto& project : projects) {
+            cout << "Project: " << project.getProjectName() << "\n";
+            project.listTasks();
+            project.listTeamMembers();
+            cout << "====================\n";
+        }
+    }
 };
 
 int main() {
+    Manager manager;
+
     string projectName;
     cout << "Enter the project name: ";
     getline(cin, projectName);
@@ -82,7 +104,10 @@ int main() {
     int numTasks;
     cout << "Enter the number of tasks: ";
     cin >> numTasks;
-    cin.ignore(); 
+    cin.ignore();
+
+    // Used  array to create tasks
+    Task* tasks = new Task[numTasks];
 
     for (int i = 0; i < numTasks; ++i) {
         string title, description, deadline;
@@ -93,14 +118,14 @@ int main() {
         cout << "Enter deadline for task " << i + 1 << ": ";
         getline(cin, deadline);
 
-        Task task(title, description, deadline);
-        project1.addTask(task);
+        tasks[i] = Task(title, description, deadline);
+        project1.addTask(tasks[i]);
     }
 
     int numMembers;
     cout << "Enter the number of team members: ";
     cin >> numMembers;
-    cin.ignore(); 
+    cin.ignore();
 
     for (int i = 0; i < numMembers; ++i) {
         string member;
@@ -110,9 +135,12 @@ int main() {
         project1.addTeamMember(member);
     }
 
+    manager.addProject(project1);
+
     cout << "\nProject Details:\n";
-    project1.listTasks();
-    project1.listTeamMembers();
+    manager.listProjects();
+
+    delete[] tasks; 
 
     return 0;
 }
