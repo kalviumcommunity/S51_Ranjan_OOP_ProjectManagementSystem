@@ -38,20 +38,27 @@ public:
 class Project {
 private:
     string projectName;
-    vector<Task> tasks;
+    vector<Task*> tasks; // Storing pointers to Task objects
     vector<string> teamMembers;
 
 public:
     Project(const string& name) : projectName(name) {}
 
-    void addTask(const Task& task) {
+    ~Project() {
+        // Clean up dynamically allocated Task objects
+        for (auto task : tasks) {
+            delete task;
+        }
+    }
+
+    void addTask(Task* task) {
         this->tasks.push_back(task);
     }
 
     void listTasks() const {
         cout << "Tasks for Project: " << this->projectName << "\n";
         for (const auto& task : this->tasks) {
-            task.displayTask();
+            task->displayTask();
             cout << "----------------\n";
         }
     }
@@ -74,40 +81,44 @@ public:
 
 class Manager {
 private:
-    vector<Project> projects;
+    vector<Project*> projects; // Storing pointers to Project objects
 
 public:
-    void addProject(const Project& project) {
+    ~Manager() {
+        // Clean up dynamically allocated Project objects
+        for (auto project : projects) {
+            delete project;
+        }
+    }
+
+    void addProject(Project* project) {
         projects.push_back(project);
     }
 
     void listProjects() const {
         cout << "Projects:\n";
         for (const auto& project : projects) {
-            cout << "Project: " << project.getProjectName() << "\n";
-            project.listTasks();
-            project.listTeamMembers();
+            cout << "Project: " << project->getProjectName() << "\n";
+            project->listTasks();
+            project->listTeamMembers();
             cout << "====================\n";
         }
     }
 };
 
 int main() {
-    Manager manager;
+    Manager* manager = new Manager();  
 
     string projectName;
     cout << "Enter the project name: ";
     getline(cin, projectName);
 
-    Project project1(projectName);
+    Project* project1 = new Project(projectName);  
 
     int numTasks;
     cout << "Enter the number of tasks: ";
     cin >> numTasks;
     cin.ignore();
-
-    // Used  array to create tasks
-    Task* tasks = new Task[numTasks];
 
     for (int i = 0; i < numTasks; ++i) {
         string title, description, deadline;
@@ -118,8 +129,8 @@ int main() {
         cout << "Enter deadline for task " << i + 1 << ": ";
         getline(cin, deadline);
 
-        tasks[i] = Task(title, description, deadline);
-        project1.addTask(tasks[i]);
+        Task* task = new Task(title, description, deadline);  
+        project1->addTask(task);
     }
 
     int numMembers;
@@ -132,15 +143,16 @@ int main() {
         cout << "Enter name for team member " << i + 1 << ": ";
         getline(cin, member);
 
-        project1.addTeamMember(member);
+        project1->addTeamMember(member);
     }
 
-    manager.addProject(project1);
+    manager->addProject(project1);
 
     cout << "\nProject Details:\n";
-    manager.listProjects();
+    manager->listProjects();
 
-    delete[] tasks; 
+ 
+    delete manager;  
 
     return 0;
 }
