@@ -10,14 +10,23 @@ private:
     string description;
     bool completed;
     string deadline;
-
+    static int taskCount; 
 public:
-    // Default constructor
-    Task() : title(""), description(""), completed(false), deadline("") {}
+  
+    Task() : title(""), description(""), completed(false), deadline("") {
+        taskCount++;
+    }
 
-    // Parameterized constructor
+
     Task(const string& title, const string& description, const string& deadline)
-        : title(title), description(description), completed(false), deadline(deadline) {}
+        : title(title), description(description), completed(false), deadline(deadline) {
+        taskCount++;
+    }
+
+    
+    ~Task() {
+        taskCount--; 
+    }
 
     void markComplete() {
         this->completed = true;
@@ -33,22 +42,35 @@ public:
     string getTitle() const {
         return this->title;
     }
+
+    
+    static int getTaskCount() {
+        return taskCount;
+    }
 };
+
+
+int Task::taskCount = 0;
 
 class Project {
 private:
     string projectName;
-    vector<Task*> tasks; // Storing pointers to Task objects
+    vector<Task*> tasks; 
     vector<string> teamMembers;
+    static int projectCount; 
 
 public:
-    Project(const string& name) : projectName(name) {}
+    Project(const string& name) : projectName(name) {
+        projectCount++;
+    }
 
+    
     ~Project() {
-        // Clean up dynamically allocated Task objects
+        
         for (auto task : tasks) {
             delete task;
         }
+        projectCount--; 
     }
 
     void addTask(Task* task) {
@@ -77,18 +99,27 @@ public:
     string getProjectName() const {
         return this->projectName;
     }
+
+    
+    static int getProjectCount() {
+        return projectCount;
+    }
 };
+
+
+int Project::projectCount = 0;
 
 class Manager {
 private:
-    vector<Project*> projects; // Storing pointers to Project objects
+    vector<Project*> projects; 
 
 public:
     ~Manager() {
-        // Clean up dynamically allocated Project objects
+        
         for (auto project : projects) {
             delete project;
         }
+        
     }
 
     void addProject(Project* project) {
@@ -151,7 +182,11 @@ int main() {
     cout << "\nProject Details:\n";
     manager->listProjects();
 
- 
+    
+    cout << "Total Tasks Created: " << Task::getTaskCount() << "\n";
+    cout << "Total Projects Managed: " << Project::getProjectCount() << "\n";
+
+    
     delete manager;  
 
     return 0;
