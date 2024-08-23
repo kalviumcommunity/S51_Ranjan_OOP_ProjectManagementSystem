@@ -10,22 +10,19 @@ private:
     string description;
     bool completed;
     string deadline;
-    static int taskCount; 
+    static int taskCount; // Static member variable
 public:
-  
     Task() : title(""), description(""), completed(false), deadline("") {
         taskCount++;
     }
-
 
     Task(const string& title, const string& description, const string& deadline)
         : title(title), description(description), completed(false), deadline(deadline) {
         taskCount++;
     }
 
-    
     ~Task() {
-        taskCount--; 
+        taskCount--;
     }
 
     void markComplete() {
@@ -43,12 +40,10 @@ public:
         return this->title;
     }
 
-    
-    static int getTaskCount() {
+    static int getTaskCount() { // Static member function
         return taskCount;
     }
 };
-
 
 int Task::taskCount = 0;
 
@@ -57,20 +52,17 @@ private:
     string projectName;
     vector<Task*> tasks; 
     vector<string> teamMembers;
-    static int projectCount; 
-
+    static int projectCount; // Static member variable
 public:
     Project(const string& name) : projectName(name) {
         projectCount++;
     }
 
-    
     ~Project() {
-        
         for (auto task : tasks) {
             delete task;
         }
-        projectCount--; 
+        projectCount--;
     }
 
     void addTask(Task* task) {
@@ -100,26 +92,21 @@ public:
         return this->projectName;
     }
 
-    
-    static int getProjectCount() {
+    static int getProjectCount() { // Static member function
         return projectCount;
     }
 };
-
 
 int Project::projectCount = 0;
 
 class Manager {
 private:
     vector<Project*> projects; 
-
 public:
     ~Manager() {
-        
         for (auto project : projects) {
             delete project;
         }
-        
     }
 
     void addProject(Project* project) {
@@ -182,11 +169,9 @@ int main() {
     cout << "\nProject Details:\n";
     manager->listProjects();
 
-    
     cout << "Total Tasks Created: " << Task::getTaskCount() << "\n";
     cout << "Total Projects Managed: " << Project::getProjectCount() << "\n";
 
-    
     delete manager;  
 
     return 0;
