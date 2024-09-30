@@ -11,6 +11,7 @@ private:
     bool completed;
     string deadline;
     static int taskCount; // Static member variable
+
 public:
     Task() : title(""), description(""), completed(false), deadline("") {
         taskCount++;
@@ -25,6 +26,40 @@ public:
         taskCount--;
     }
 
+    // Getter (Accessor) methods
+    string getTitle() const {
+        return title;
+    }
+
+    string getDescription() const {
+        return description;
+    }
+
+    string getDeadline() const {
+        return deadline;
+    }
+
+    bool isCompleted() const {
+        return completed;
+    }
+
+    // Setter (Mutator) methods
+    void setTitle(const string& title) {
+        this->title = title;
+    }
+
+    void setDescription(const string& description) {
+        this->description = description;
+    }
+
+    void setDeadline(const string& deadline) {
+        this->deadline = deadline;
+    }
+
+    void setCompleted(bool completed) {
+        this->completed = completed;
+    }
+
     void markComplete() {
         this->completed = true;
     }
@@ -34,10 +69,6 @@ public:
              << "Description: " << this->description << "\n"
              << "Deadline: " << this->deadline << "\n"
              << "Status: " << (this->completed ? "Completed" : "Pending") << "\n";
-    }
-
-    string getTitle() const {
-        return this->title;
     }
 
     static int getTaskCount() { // Static member function
@@ -50,9 +81,10 @@ int Task::taskCount = 0;
 class Project {
 private:
     string projectName;
-    vector<Task*> tasks; 
+    vector<Task*> tasks;
     vector<string> teamMembers;
     static int projectCount; // Static member variable
+
 public:
     Project(const string& name) : projectName(name) {
         projectCount++;
@@ -63,6 +95,24 @@ public:
             delete task;
         }
         projectCount--;
+    }
+
+    // Getter (Accessor) methods
+    string getProjectName() const {
+        return projectName;
+    }
+
+    vector<Task*> getTasks() const {
+        return tasks;
+    }
+
+    vector<string> getTeamMembers() const {
+        return teamMembers;
+    }
+
+    // Setter (Mutator) methods
+    void setProjectName(const string& name) {
+        this->projectName = name;
     }
 
     void addTask(Task* task) {
@@ -88,10 +138,6 @@ public:
         }
     }
 
-    string getProjectName() const {
-        return this->projectName;
-    }
-
     static int getProjectCount() { // Static member function
         return projectCount;
     }
@@ -101,7 +147,7 @@ int Project::projectCount = 0;
 
 class Manager {
 private:
-    vector<Project*> projects; 
+    vector<Project*> projects;
 public:
     ~Manager() {
         for (auto project : projects) {
@@ -125,13 +171,13 @@ public:
 };
 
 int main() {
-    Manager* manager = new Manager();  
+    Manager* manager = new Manager();
 
     string projectName;
     cout << "Enter the project name: ";
     getline(cin, projectName);
 
-    Project* project1 = new Project(projectName);  
+    Project* project1 = new Project(projectName);
 
     int numTasks;
     cout << "Enter the number of tasks: ";
@@ -147,7 +193,7 @@ int main() {
         cout << "Enter deadline for task " << i + 1 << ": ";
         getline(cin, deadline);
 
-        Task* task = new Task(title, description, deadline);  
+        Task* task = new Task(title, description, deadline);
         project1->addTask(task);
     }
 
@@ -172,7 +218,7 @@ int main() {
     cout << "Total Tasks Created: " << Task::getTaskCount() << "\n";
     cout << "Total Projects Managed: " << Project::getProjectCount() << "\n";
 
-    delete manager;  
+    delete manager;
 
     return 0;
 }
