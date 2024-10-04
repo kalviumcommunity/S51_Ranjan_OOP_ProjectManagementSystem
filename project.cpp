@@ -4,9 +4,9 @@
 
 using namespace std;
 
-// Base Task Class
+// Base Task class
 class Task {
-private:
+protected:
     string title;
     string description;
     bool completed;
@@ -63,7 +63,8 @@ public:
         this->completed = true;
     }
 
-    void displayTask() const {
+    // Virtual method to be overridden in the derived class
+    virtual void displayTask() const {
         cout << "Title: " << this->title << "\n"
              << "Description: " << this->description << "\n"
              << "Deadline: " << this->deadline << "\n"
@@ -77,30 +78,26 @@ public:
 
 int Task::taskCount = 0;
 
-// Derived Milestone Class (Single Inheritance)
-class Milestone : public Task {
+// Derived class with method overriding (Run-time polymorphism)
+class SpecialTask : public Task {
 private:
-    string milestoneDate;
+    string priority;
 
 public:
-    Milestone(const string& title, const string& description, const string& deadline, const string& milestoneDate)
-        : Task(title, description, deadline), milestoneDate(milestoneDate) {}
+    SpecialTask(const string& title, const string& description, const string& deadline, const string& priority)
+        : Task(title, description, deadline), priority(priority) {}
 
-    string getMilestoneDate() const {
-        return milestoneDate;
-    }
-
-    void setMilestoneDate(const string& milestoneDate) {
-        this->milestoneDate = milestoneDate;
-    }
-
+    // Overriding the displayTask method from the base class
     void displayTask() const override {
-        Task::displayTask();
-        cout << "Milestone Date: " << this->milestoneDate << "\n";
+        cout << "Title: " << this->title << " (Special Task)\n"
+             << "Description: " << this->description << "\n"
+             << "Deadline: " << this->deadline << "\n"
+             << "Priority: " << this->priority << "\n"
+             << "Status: " << (this->completed ? "Completed" : "Pending") << "\n";
     }
 };
 
-// Project Class (As before)
+// Project class
 class Project {
 private:
     string projectName;
@@ -136,7 +133,14 @@ public:
         this->projectName = name;
     }
 
+    // Function Overloading: Different ways to add a task
     void addTask(Task* task) {
+        this->tasks.push_back(task);
+    }
+
+    // Overloaded addTask function to create a task with fewer details
+    void addTask(const string& title) {
+        Task* task = new Task(title, "", "");
         this->tasks.push_back(task);
     }
 
@@ -166,43 +170,95 @@ public:
 
 int Project::projectCount = 0;
 
-// TeamLead Class (Multiple Inheritance)
-class TeamLead : public Task, public Project {
-public:
-    TeamLead(const string& title, const string& description, const string& deadline, const string& projectName)
-        : Task(title, description, deadline), Project(projectName) {}
+// Manager class
+class Manager {
+private:
+    vector<Project*> projects;
 
-    void displayDetails() const {
-        cout << "Team Lead: " << Task::getTitle() << "\n";
-        cout << "Project: " << Project::getProjectName() << "\n";
-        Project::listTasks();
+public:
+    ~Manager() {
+        for (auto project : projects) {
+            delete project;
+        }
+    }
+
+    void addProject(Project* project) {
+        projects.push_back(project);
+    }
+
+    void listProjects() const {
+        cout << "Projects:\n";
+        for (const auto& project : projects) {
+            cout << "Project: " << project->getProjectName() << "\n";
+            project->listTasks();
+            project->listTeamMembers();
+            cout << "====================\n";
+        }
     }
 };
 
+// Main function demonstrating polymorphism
 int main() {
-    // Manager object and Project setup
-    Project* project1 = new Project("Website Development");
+    Manager* manager = new Manager();
 
-    Task* task1 = new Task("Design Mockup", "Create design mockups for the new website", "2024-10-10");
-    Milestone* milestone1 = new Milestone("Code Base Setup", "Set up the basic project structure", "2024-10-05", "2024-10-15");
+    string projectName;
+    cout << "Enter the project name: ";
+    getline(cin, projectName);
 
-    project1->addTask(task1);
-    project1->addTask(milestone1);
+    Project* project1 = new Project(projectName);
 
-    // TeamLead setup (Multiple Inheritance)
-    TeamLead* lead = new TeamLead("Ranjan", "Lead Developer", "2024-10-20", "Website Development");
-    lead->addTask(task1);
-    lead->addTask(milestone1);
+    int numTasks;
+    cout << "Enter the number of tasks: ";
+    cin >> numTasks;
+    cin.ignore();
 
-    // Displaying details
-    cout << "Project Details:\n";
-    project1->listTasks();
-    
-    cout << "\nTeam Lead Details:\n";
-    lead->displayDetails();
+    for (int i = 0; i < numTasks; ++i) {
+        string title, description, deadline, priority;
+        cout << "Enter title for task " << i + 1 << ": ";
+        getline(cin, title);
+        cout << "Enter description for task " << i + 1 << ": ";
+        getline(cin, description);
+        cout << "Enter deadline for task " << i + 1 << ": ";
+        getline(cin, deadline);
 
-    delete project1;
-    delete lead;
+        cout << "Is this a special task? (y/n): ";
+        char isSpecial;
+        cin >> isSpecial;
+        cin.ignore();
+
+        if (isSpecial == 'y' || isSpecial == 'Y') {
+            cout << "Enter priority for task " << i + 1 << ": ";
+            getline(cin, priority);
+            SpecialTask* specialTask = new SpecialTask(title, description, deadline, priority);
+            project1->addTask(specialTask);
+        } else {
+            Task* task = new Task(title, description, deadline);
+            project1->addTask(task);
+        }
+    }
+
+    int numMembers;
+    cout << "Enter the number of team members: ";
+    cin >> numMembers;
+    cin.ignore();
+
+    for (int i = 0; i < numMembers; ++i) {
+        string member;
+        cout << "Enter name for team member " << i + 1 << ": ";
+        getline(cin, member);
+
+        project1->addTeamMember(member);
+    }
+
+    manager->addProject(project1);
+
+    cout << "\nProject Details:\n";
+    manager->listProjects();
+
+    cout << "Total Tasks Created: " << Task::getTaskCount() << "\n";
+    cout << "Total Projects Managed: " << Project::getProjectCount() << "\n";
+
+    delete manager;
 
     return 0;
 }
