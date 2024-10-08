@@ -4,7 +4,7 @@
 
 using namespace std;
 
-// Base Task class
+// Abstract Base Task class with a pure virtual function
 class Task {
 protected:
     string title;
@@ -63,13 +63,8 @@ public:
         this->completed = true;
     }
 
-    // Virtual method to be overridden in the derived class
-    virtual void displayTask() const {
-        cout << "Title: " << this->title << "\n"
-             << "Description: " << this->description << "\n"
-             << "Deadline: " << this->deadline << "\n"
-             << "Status: " << (this->completed ? "Completed" : "Pending") << "\n";
-    }
+    // Pure virtual function, making Task an abstract class
+    virtual void displayTask() const = 0;
 
     static int getTaskCount() {
         return taskCount;
@@ -135,12 +130,6 @@ public:
 
     // Function Overloading: Different ways to add a task
     void addTask(Task* task) {
-        this->tasks.push_back(task);
-    }
-
-    // Overloaded addTask function to create a task with fewer details
-    void addTask(const string& title) {
-        Task* task = new Task(title, "", "");
         this->tasks.push_back(task);
     }
 
@@ -232,7 +221,7 @@ int main() {
             SpecialTask* specialTask = new SpecialTask(title, description, deadline, priority);
             project1->addTask(specialTask);
         } else {
-            Task* task = new Task(title, description, deadline);
+            Task* task = new Task(title, description, deadline);  
             project1->addTask(task);
         }
     }
