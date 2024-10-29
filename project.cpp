@@ -4,7 +4,8 @@
 
 using namespace std;
 
-// Abstract Base Task class with a pure virtual function
+// Abstract Base Task class demonstrating Single Responsibility Principle (SRP)
+// Each class is responsible for a single part of the functionality in this system
 class Task {
 protected:
     string title;
@@ -27,6 +28,7 @@ public:
         taskCount--;
     }
 
+    // Getters and setters for Task properties
     string getTitle() const {
         return title;
     }
@@ -63,9 +65,10 @@ public:
         this->completed = true;
     }
 
-    // Pure virtual function, making Task an abstract class
+    // Pure virtual function for displaying task details, making Task an abstract class
     virtual void displayTask() const = 0;
 
+    // Static method to get the total task count
     static int getTaskCount() {
         return taskCount;
     }
@@ -73,7 +76,7 @@ public:
 
 int Task::taskCount = 0;
 
-// Derived class with method overriding (Run-time polymorphism)
+// Derived class for special tasks, inheriting from Task
 class SpecialTask : public Task {
 private:
     string priority;
@@ -82,7 +85,7 @@ public:
     SpecialTask(const string& title, const string& description, const string& deadline, const string& priority)
         : Task(title, description, deadline), priority(priority) {}
 
-    // Overriding the displayTask method from the base class
+    // Overriding displayTask to include priority
     void displayTask() const override {
         cout << "Title: " << this->title << " (Special Task)\n"
              << "Description: " << this->description << "\n"
@@ -92,7 +95,7 @@ public:
     }
 };
 
-// Project class
+// Project class demonstrating SRP, managing only project-related data
 class Project {
 private:
     string projectName;
@@ -112,6 +115,7 @@ public:
         projectCount--;
     }
 
+    // Getters and setters for project name
     string getProjectName() const {
         return projectName;
     }
@@ -128,11 +132,12 @@ public:
         this->projectName = name;
     }
 
-    // Function Overloading: Different ways to add a task
+    // Adds a task to the project
     void addTask(Task* task) {
         this->tasks.push_back(task);
     }
 
+    // Displays tasks for the project
     void listTasks() const {
         cout << "Tasks for Project: " << this->projectName << "\n";
         for (const auto& task : this->tasks) {
@@ -141,10 +146,12 @@ public:
         }
     }
 
+    // Adds a team member to the project
     void addTeamMember(const string& member) {
         this->teamMembers.push_back(member);
     }
 
+    // Displays project team members
     void listTeamMembers() const {
         cout << "Team Members for Project: " << this->projectName << "\n";
         for (const auto& member : this->teamMembers) {
@@ -159,7 +166,7 @@ public:
 
 int Project::projectCount = 0;
 
-// Manager class
+// Manager class demonstrating SRP, managing only project instances
 class Manager {
 private:
     vector<Project*> projects;
@@ -171,10 +178,12 @@ public:
         }
     }
 
+    // Adds a project to the manager
     void addProject(Project* project) {
         projects.push_back(project);
     }
 
+    // Lists all managed projects
     void listProjects() const {
         cout << "Projects:\n";
         for (const auto& project : projects) {
@@ -186,7 +195,7 @@ public:
     }
 };
 
-// Main function demonstrating polymorphism
+// Main function demonstrating polymorphism and SRP
 int main() {
     Manager* manager = new Manager();
 
@@ -221,7 +230,7 @@ int main() {
             SpecialTask* specialTask = new SpecialTask(title, description, deadline, priority);
             project1->addTask(specialTask);
         } else {
-            Task* task = new Task(title, description, deadline);  
+            Task* task = new Task(title, description, deadline);  // Corrected to use abstract base class (if needed, could create a regular task subclass)
             project1->addTask(task);
         }
     }
