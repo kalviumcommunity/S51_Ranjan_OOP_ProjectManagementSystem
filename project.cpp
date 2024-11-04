@@ -4,8 +4,7 @@
 
 using namespace std;
 
-// Abstract Base Task class demonstrating Single Responsibility Principle (SRP)
-// Each class is responsible for a single part of the functionality in this system
+// Abstract Base Task class demonstrating SRP
 class Task {
 protected:
     string title;
@@ -15,11 +14,7 @@ protected:
     static int taskCount;
 
 public:
-    Task() : title(""), description(""), completed(false), deadline("") {
-        taskCount++;
-    }
-
-    Task(const string& title, const string& description, const string& deadline)
+    Task(const string& title = "", const string& description = "", const string& deadline = "")
         : title(title), description(description), completed(false), deadline(deadline) {
         taskCount++;
     }
@@ -29,52 +24,41 @@ public:
     }
 
     // Getters and setters for Task properties
-    string getTitle() const {
-        return title;
-    }
+    string getTitle() const { return title; }
+    string getDescription() const { return description; }
+    string getDeadline() const { return deadline; }
+    bool isCompleted() const { return completed; }
 
-    string getDescription() const {
-        return description;
-    }
+    void setTitle(const string& title) { this->title = title; }
+    void setDescription(const string& description) { this->description = description; }
+    void setDeadline(const string& deadline) { this->deadline = deadline; }
+    void setCompleted(bool completed) { this->completed = completed; }
 
-    string getDeadline() const {
-        return deadline;
-    }
+    void markComplete() { this->completed = true; }
 
-    bool isCompleted() const {
-        return completed;
-    }
-
-    void setTitle(const string& title) {
-        this->title = title;
-    }
-
-    void setDescription(const string& description) {
-        this->description = description;
-    }
-
-    void setDeadline(const string& deadline) {
-        this->deadline = deadline;
-    }
-
-    void setCompleted(bool completed) {
-        this->completed = completed;
-    }
-
-    void markComplete() {
-        this->completed = true;
-    }
+    // Static method to get the total task count
+    static int getTaskCount() { return taskCount; }
 
     // Pure virtual function for displaying task details, making Task an abstract class
     virtual void displayTask() const = 0;
-
-    // Static method to get the total task count
-    static int getTaskCount() {
-        return taskCount;
-    }
 };
 
 int Task::taskCount = 0;
+
+// Derived class for Regular tasks, demonstrating OCP
+class RegularTask : public Task {
+public:
+    RegularTask(const string& title, const string& description, const string& deadline)
+        : Task(title, description, deadline) {}
+
+    // Overriding displayTask to provide task details for a regular task
+    void displayTask() const override {
+        cout << "Title: " << this->title << " (Regular Task)\n"
+             << "Description: " << this->description << "\n"
+             << "Deadline: " << this->deadline << "\n"
+             << "Status: " << (this->completed ? "Completed" : "Pending") << "\n";
+    }
+};
 
 // Derived class for special tasks, inheriting from Task
 class SpecialTask : public Task {
@@ -85,7 +69,7 @@ public:
     SpecialTask(const string& title, const string& description, const string& deadline, const string& priority)
         : Task(title, description, deadline), priority(priority) {}
 
-    // Overriding displayTask to include priority
+    // Overriding displayTask to include priority for special tasks
     void displayTask() const override {
         cout << "Title: " << this->title << " (Special Task)\n"
              << "Description: " << this->description << "\n"
@@ -115,22 +99,9 @@ public:
         projectCount--;
     }
 
-    // Getters and setters for project name
-    string getProjectName() const {
-        return projectName;
-    }
+    string getProjectName() const { return projectName; }
 
-    vector<Task*> getTasks() const {
-        return tasks;
-    }
-
-    vector<string> getTeamMembers() const {
-        return teamMembers;
-    }
-
-    void setProjectName(const string& name) {
-        this->projectName = name;
-    }
+    void setProjectName(const string& name) { this->projectName = name; }
 
     // Adds a task to the project
     void addTask(Task* task) {
@@ -146,12 +117,10 @@ public:
         }
     }
 
-    // Adds a team member to the project
     void addTeamMember(const string& member) {
         this->teamMembers.push_back(member);
     }
 
-    // Displays project team members
     void listTeamMembers() const {
         cout << "Team Members for Project: " << this->projectName << "\n";
         for (const auto& member : this->teamMembers) {
@@ -159,14 +128,12 @@ public:
         }
     }
 
-    static int getProjectCount() {
-        return projectCount;
-    }
+    static int getProjectCount() { return projectCount; }
 };
 
 int Project::projectCount = 0;
 
-// Manager class demonstrating SRP, managing only project instances
+// Manager class
 class Manager {
 private:
     vector<Project*> projects;
@@ -178,12 +145,10 @@ public:
         }
     }
 
-    // Adds a project to the manager
     void addProject(Project* project) {
         projects.push_back(project);
     }
 
-    // Lists all managed projects
     void listProjects() const {
         cout << "Projects:\n";
         for (const auto& project : projects) {
@@ -230,8 +195,8 @@ int main() {
             SpecialTask* specialTask = new SpecialTask(title, description, deadline, priority);
             project1->addTask(specialTask);
         } else {
-            Task* task = new Task(title, description, deadline);  // Corrected to use abstract base class (if needed, could create a regular task subclass)
-            project1->addTask(task);
+            RegularTask* regularTask = new RegularTask(title, description, deadline);
+            project1->addTask(regularTask);
         }
     }
 
