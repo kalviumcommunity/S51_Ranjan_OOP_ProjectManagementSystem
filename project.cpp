@@ -4,8 +4,20 @@
 
 using namespace std;
 
-// Abstract Base Task class demonstrating SRP
-class Task {
+// Interface for displayable entities, following ISP
+class Displayable {
+public:
+    virtual void displayTask() const = 0;  // Pure virtual function for display
+};
+
+// Interface for completable entities, following ISP
+class Completable {
+public:
+    virtual void markComplete() = 0;       // Pure virtual function for marking as complete
+};
+
+// Abstract Base Task class demonstrating SRP and ISP
+class Task : public Displayable, public Completable {
 protected:
     string title;
     string description;
@@ -32,15 +44,11 @@ public:
     void setTitle(const string& title) { this->title = title; }
     void setDescription(const string& description) { this->description = description; }
     void setDeadline(const string& deadline) { this->deadline = deadline; }
-    void setCompleted(bool completed) { this->completed = completed; }
 
-    void markComplete() { this->completed = true; }
+    void markComplete() override { this->completed = true; }  // Implementation of Completable interface
 
     // Static method to get the total task count
     static int getTaskCount() { return taskCount; }
-
-    // Pure virtual function for displaying task details, making Task an abstract class
-    virtual void displayTask() const = 0;
 };
 
 int Task::taskCount = 0;
@@ -160,7 +168,7 @@ public:
     }
 };
 
-// Main function demonstrating polymorphism and SRP
+// Main function demonstrating polymorphism, SRP, and ISP
 int main() {
     Manager* manager = new Manager();
 
